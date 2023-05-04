@@ -1,15 +1,41 @@
+import 'package:dynamic_color/dynamic_color.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:not_alone/screens/home_screen.dart';
 import 'package:not_alone/screens/welcome_screen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-void main() async {
+/// Its true if the application is compiled in debug mode.
+///
+/// Use it in place of [kDebugMode] through out the app to check for debug mode.
+/// Useful in faking production mode in debug mode by setting it to false.
+bool isInDebugMode = kDebugMode;
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(
-      MaterialApp(debugShowCheckedModeBanner: false, home: const NotAlone()));
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DynamicColorBuilder(
+        builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+      return MaterialApp(
+        title: 'Not Alone',
+        theme: ThemeData(useMaterial3: true, colorScheme: lightDynamic),
+        darkTheme: ThemeData(useMaterial3: true, colorScheme: darkDynamic),
+        debugShowCheckedModeBanner: false,
+        home: const NotAlone(),
+      );
+    });
+  }
 }
 
 class NotAlone extends StatelessWidget {
@@ -17,13 +43,14 @@ class NotAlone extends StatelessWidget {
 
   final secureStorage = const FlutterSecureStorage();
 
+  // Check if user is logged in or not in Firebase
   Future<bool> checkLoginStatus() async {
-    String? value = await secureStorage.read(key: 'uid');
-
-    if (value == null) {
-      return false;
+    User? user = FirebaseAuth.instance.currentUser;
+    user = await FirebaseAuth.instance.authStateChanges().first;
+    if (user != null) {
+      return true;
     }
-    return true;
+    return false;
   }
 
   @override
@@ -35,8 +62,8 @@ class NotAlone extends StatelessWidget {
           return const WelcomeScreen();
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Container(
-              color: Colors.white, child: const CircularProgressIndicator());
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
         }
         return const HomeScreen();
       },

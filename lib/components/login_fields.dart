@@ -16,28 +16,24 @@ class LoginFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 20),
-      child: TextFormField(
-        onChanged: onChanged,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          isDense: true,
-          filled: true,
-          fillColor: Colors.white,
-          hintText: formHintText,
-          hintStyle: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: Colors.grey.shade400),
-          prefixIcon: Icon(
-            formPrefixIcon,
-            color: Colors.grey.shade400,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide.none),
+    return TextFormField(
+      onChanged: onChanged,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        isDense: true,
+        filled: true,
+        // fillColor: Colors.white,
+        hintText: formHintText,
+        hintStyle: Theme.of(context).textTheme.bodyMedium
+        // ?.copyWith(color: Colors.grey.shade400)
+        ,
+        prefixIcon: Icon(
+          formPrefixIcon,
+          // color: Colors.grey.shade400,
         ),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide.none),
       ),
     );
   }
